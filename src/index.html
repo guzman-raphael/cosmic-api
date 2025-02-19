@@ -1,0 +1,16 @@
+<pre id="json"></pre>
+<script>
+    var data = {
+        "data": {
+            "x": "1",
+            "y": "1",
+            "url": "http://url.com"
+        },
+        "event": "start",
+        "show": 1,
+        "id": Math.floor(Math.random() * 50)
+    }
+
+
+    document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
+</script>
