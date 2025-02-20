@@ -1,16 +1,52 @@
 <pre id="json"></pre>
-<script>
+<script type="module">
+    import { Faker, en } from 'https://esm.sh/@faker-js/faker';
+
+    var fake1 = new Faker({seed: 0, locale: [en]});
+    // let init = (n, f) => [...Array(n).keys()].map(_ => f());
+    let init = (n, f) => Array.from({length: n}, () => f());
+    var addresses = init(2, fake1.color.human).map(
+            solarSystem => init(5, fake1.word.noun).map(
+                planet => init(10, fake1.location.country).map(
+                    country => init(3, fake1.location.streetAddress).map(
+                        address => ({
+                            "solarSystem": solarSystem,
+                            "planet": planet,
+                            "country": country,
+                            "address": address
+                        })
+                    )
+                ).flatMap(arr => arr)
+            ).flatMap(arr => arr)
+        ).flatMap(arr => arr);
+
+    var fake2 = new Faker({locale: [en]});
+    var time = Math.floor(Date.now()/1000);
     var data = {
-        "data": {
-            "x": "1",
-            "y": "1",
-            "url": "http://url.com"
-        },
-        "event": "start",
-        "show": 1,
-        "id": Math.floor(Math.random() * 50)
-    }
-
-
+        "shipments": Array.from({length: 100}, () => {
+            var origin = fake2.helpers.arrayElement(addresses);
+            var destination = fake2.helpers.arrayElement(addresses);
+            return {
+            "time": time,
+            "weightKg": fake2.number.float({ min: 0.5, max: 20, fractionDigits: 2 }),
+            "volumeM3": fake2.number.float({ min: 0.2, max: 1, fractionDigits: 3 }),
+            "etaMin": fake2.number.int({ min: 1, max: 10 }),
+            "status": "shipped",
+            "forecastOriginWindVelocityMph": fake2.number.float({ min: 0.2, max: 30, fractionDigits: 1 }),
+            "forecastOriginWindDirection": fake2.helpers.arrayElement(["N","W", "S", "E"]),
+            "forecastOriginPrecipitationChance": fake2.number.float({ min: 0, max: 1, fractionDigits: 2 }),
+            "forecastOriginPrecipitationKind": fake2.helpers.arrayElement(["rain","snow", "hail", "acid", "fire"]),
+            "originSolarSystem": origin.solarSystem,
+            "originPlanet": origin.planet,
+            "originCountry": origin.country,
+            "originAddress": origin.address,
+            "destinationSolarSystem": destination.solarSystem,
+            "destinationPlanet": destination.planet,
+            "destinationCountry": destination.country,
+            "destinationAddress": destination.address,
+            };
+        }),
+    };
+    // "id": Math.floor(Math.random() * 50)
     document.getElementById("json").innerHTML = JSON.stringify(data, undefined, 2);
 </script>
